@@ -8,19 +8,6 @@ An open-source, AI-powered system for real-time assessment and word-by-word trac
 
 ---
 
-##  Table of Contents
-
-- [Overview](#-overview)
-- [Background](#-background)
-- [Algorithmic Foundation](#-algorithmic-foundation)
-- [Implementation](#-implementation)
-- [System Architecture](#-system-architecture)
-- [Installation & Usage](#-installation--usage)
-- [Configuration](#-configuration)
-- [Research References](#-research-references)
-
----
-
 ##  Overview
 
 This project is an web-based application designed to assist Muslims worldwide in memorizing and perfecting their recitation of the Holy Quran. The system provides:
@@ -468,4 +455,5 @@ For questions, bug reports, or feature requests, please open an issue on GitHub
 ***Email***: mailto:yahyamahroof35@gmail.com
 
 ***whatsapp***: http://wa.me/201001866276
+
 
