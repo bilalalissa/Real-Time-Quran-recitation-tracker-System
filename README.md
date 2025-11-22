@@ -557,7 +557,7 @@ This project is built upon the following research and technical documentation:
 
 ##  Acknowledgments
 
-- **[Tarteel AI Team](https://tarteel.ai/)**: For their groundbreaking research in Quranic AI applications
+- **[Tarteel AI Team](https://tarteel.ai/blog/)**: For their groundbreaking research in Quranic AI applications
 - **[Groq](https://www.groq.com/)**: For providing fast, accurate Whisper API access
 - **[NVIDIA](https://developer.nvidia.com/nvidia-nemo)**: For the NeMo toolkit and Arabic ASR models enabling local processing
 - **[Mostafa Ahmed Mostafa](https://github.com/MostafaAhmed98)**: For training and open-sourcing the specialized Arabic ASR model used and recommended in this project
