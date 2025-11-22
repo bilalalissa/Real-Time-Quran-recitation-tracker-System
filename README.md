@@ -383,13 +383,7 @@ export ASR_BACKEND=nemo  # Linux/Mac
 set ASR_BACKEND=nemo     # Windows
 ```
 
-#### Step 4: Test Configuration (Optional but Recommended)
-```bash
-python test_asr_backends.py
-```
-This will verify your ASR backend is properly configured before running the app.
-
-#### Step 5: Run the Application
+#### Run the Application
 ```bash
 python run.py
 ```
