@@ -7,6 +7,7 @@ let lastRevealedGlobalIndex = -1; // Last word revealed in the current page
 let currentPageSecondLastAyaId = null; // ID of the second-to-last aya on current page
 let secondLastAyaCompleted = false; // Flag to prevent showing button multiple times
 let currentPageData = null; // Store current page data for reference
+let sequenceErrorsCount = 0; // Track number of sequence errors in current session
 
 // Handle continue to next page button
 async function continueToNextPage() {
@@ -89,6 +90,12 @@ async function startRecitation() {
             updateWordStyle(data);
         });
 
+        // Receive sequence error alerts (skip detection)
+        socket.on('sequence_error', (data) => {
+            console.warn('Sequence error detected:', data);
+            handleSequenceError(data);
+        });
+
         // Collect audio chunks
         mediaRecorder.ondataavailable = (event) => {
             if (event.data.size > 0) {
@@ -153,6 +160,9 @@ function stopRecitation() {
     // Restore all words and remove all formatting
     resetAllWords();
     
+    // Clear sequence error display
+    clearSequenceErrorDisplay();
+    
     document.getElementById('startRecitationBtn').style.display = 'inline-block';
     document.getElementById('stopRecitationBtn').style.display = 'none';
 }
@@ -161,7 +171,7 @@ function stopRecitation() {
 function resetAllWords() {
     const allWords = document.querySelectorAll('.quran-word');
     allWords.forEach(word => {
-        word.classList.remove('hidden-word', 'revealed', 'correct');
+        word.classList.remove('hidden-word', 'revealed', 'correct', 'sequence-warning');
     });
 }
 
@@ -252,7 +262,49 @@ document.getElementById('startRecitationBtn').addEventListener('click', () => {
 
 document.getElementById('stopRecitationBtn').addEventListener('click', stopRecitation);
 
-document.getElementById('continueNextPageBtn').addEventListener('click', continueToNextPage);
+const continueBtn = document.getElementById('continueNextPageBtn');
+if (continueBtn) {
+    continueBtn.addEventListener('click', continueToNextPage);
+}
+
+// Handle sequence errors (skip detection)
+function handleSequenceError(data) {
+    sequenceErrorsCount++;
+    
+    if (data.type === 'skip_aya') {
+        // Highlight skipped ayas in yellow (visual feedback only)
+        const skippedAyaIds = data.details.skipped_aya_ids || [];
+        skippedAyaIds.forEach(ayaId => {
+            const ayaWords = document.querySelectorAll(`.quran-word[data-aya-id="${ayaId}"]`);
+            ayaWords.forEach(word => {
+                word.classList.add('sequence-warning');
+            });
+        });
+        
+        // Log to console only (no popup messages)
+        console.log(`Skip detected: Ayas ${data.details.from_aya_no} to ${data.details.to_aya_no} were skipped`);
+        
+    } else if (data.type === 'page_mismatch') {
+        // Log to console only (no popup messages)
+        console.log('Page mismatch detected - recitation does not match current page');
+        
+    } else if (data.type === 'backwards_anomaly') {
+        // Log to console only (no popup messages)
+        console.log('Backwards anomaly detected');
+    }
+}
+
+// Clear all sequence error displays
+function clearSequenceErrorDisplay() {
+    // Remove warning classes from words
+    const warningWords = document.querySelectorAll('.quran-word.sequence-warning');
+    warningWords.forEach(word => {
+        word.classList.remove('sequence-warning');
+    });
+    
+    // Reset counter
+    sequenceErrorsCount = 0;
+}
 
 // Modify verse display to support word wrapping with global indexing
 const originalRenderPage = renderPage;

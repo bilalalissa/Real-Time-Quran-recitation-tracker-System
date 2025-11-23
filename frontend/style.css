@@ -312,6 +312,26 @@ select:focus, input:focus {
     border-bottom: none;
     margin-bottom: 0;
 }
+
+/* Sequence Error Styling (Skip Detection) - Visual Highlighting Only */
+/* Highlight skipped ayas in yellow */
+.quran-word.sequence-warning {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 235, 59, 0.3) 100%);
+    border-bottom: 2px solid #ffc107;
+    padding: 2px 4px;
+    border-radius: 4px;
+    animation: pulseWarning 2s ease-in-out infinite;
+}
+
+@keyframes pulseWarning {
+    0%, 100% {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.3) 0%, rgba(255, 235, 59, 0.3) 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.5) 0%, rgba(255, 235, 59, 0.5) 100%);
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 10px;

@@ -64,6 +64,18 @@ AUDIO_BUFFER_MAX_DURATION = 8.0  # Maximum audio buffer duration in seconds (sli
                                   # Recommended: 6-10 seconds
 
 # ==============================================================================
+# Sequence Analysis Settings (Skip Detection)
+# ==============================================================================
+
+# Sequence Skip Detection
+SEQUENCE_SKIP_MIN_WORDS = 12  # Minimum words gap to consider as skip (10-15 recommended)
+SEQUENCE_SKIP_MIN_AYAS = 1    # Minimum complete ayas to consider as skip
+SEQUENCE_BACKWARDS_TOLERANCE = 3  # Allow going back this many words (natural correction)
+SEQUENCE_LOW_CONFIDENCE_THRESHOLD = 0.3  # Below this, consider page mismatch
+SEQUENCE_MIN_SEGMENT_SCORE = 0.4  # Minimum segment score for valid alignment
+SEQUENCE_ALERT_MIN_CONFIDENCE = 0.5  # Minimum confidence to alert user about skip
+
+# ==============================================================================
 # Logging Settings
 # ==============================================================================
 
@@ -109,5 +121,13 @@ If results show:
 8. NeMo ASR is slow:
    - Ensure CUDA is available (check logs for "Model loaded on CUDA")
    - If running on CPU, consider switching back to "whisper" for better latency
+
+9. Too many false skip alerts (detecting skips when there are none):
+   - Increase SEQUENCE_SKIP_MIN_WORDS to 15-20
+   - Increase SEQUENCE_ALERT_MIN_CONFIDENCE to 0.6-0.7
+
+10. Missing real skips (student skips ayas but not detected):
+   - Decrease SEQUENCE_SKIP_MIN_WORDS to 8-10
+   - Decrease SEQUENCE_ALERT_MIN_CONFIDENCE to 0.4
 """
 

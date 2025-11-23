@@ -13,6 +13,7 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from quran_alignment import AlignmentConfig, QuranAlignmentEngine, normalize_text
 from session_manager import SessionManager
+from sequence_analyzer import SequenceAnalyzer
 import config as app_config
 import asr_backend
 
@@ -135,6 +136,16 @@ session_manager = SessionManager(
     max_low_confidence=app_config.MAX_LOW_CONFIDENCE_CHUNKS,
     audio_buffer_max_duration=app_config.AUDIO_BUFFER_MAX_DURATION
 )
+
+# Initialize sequence analyzer for skip detection
+sequence_analyzer = SequenceAnalyzer(
+    skip_min_words=app_config.SEQUENCE_SKIP_MIN_WORDS,
+    skip_min_ayas=app_config.SEQUENCE_SKIP_MIN_AYAS,
+    backwards_tolerance=app_config.SEQUENCE_BACKWARDS_TOLERANCE,
+    low_confidence_threshold=app_config.SEQUENCE_LOW_CONFIDENCE_THRESHOLD,
+    min_segment_score=app_config.SEQUENCE_MIN_SEGMENT_SCORE
+)
+logging.info("Sequence analyzer initialized for skip detection")
 
 # Initialize and deploy ASR backend
 logging.info("Initializing ASR backend...")
@@ -401,6 +412,16 @@ def handle_audio_chunk(data):
         if alignment_result.confidence < 0.5:
             logging.warning(f"[{sid[:8]}] Low confidence detected! May indicate wrong recitation or audio issues.")
         
+        # Analyze sequence for skips/jumps BEFORE updating session state
+        prev_position = session_state.global_word_pos
+        sequence_error = sequence_analyzer.analyze(
+            prev_pos=prev_position,
+            alignment_result=alignment_result,
+            all_words=alignment_engine.all_words,
+            current_page=current_page,
+            consecutive_low_confidence=session_state.consecutive_low_confidence
+        )
+        
         # Update session state
         session_manager.update_from_alignment(
             sid=sid,
@@ -412,6 +433,21 @@ def handle_audio_chunk(data):
         session_state_after = session_manager.get_session(sid)
         logging.info(f"[{sid[:8]}] Session mode: {session_state_after.mode}, "
                     f"Low confidence streak: {session_state_after.consecutive_low_confidence}")
+        
+        # Check if sequence error should trigger alert
+        if sequence_error and sequence_analyzer.should_alert(
+            sequence_error, 
+            min_confidence_for_alert=app_config.SEQUENCE_ALERT_MIN_CONFIDENCE
+        ):
+            logging.warning(f"[{sid[:8]}] Sequence error detected: {sequence_error.error_type} - {sequence_error.message}")
+            
+            # Emit sequence error event
+            emit('sequence_error', {
+                'type': sequence_error.error_type,
+                'severity': sequence_error.severity,
+                'message': sequence_error.message,
+                'details': sequence_error.details
+            })
         
         # Emit results for each aligned word
         for match in alignment_result.matches:
