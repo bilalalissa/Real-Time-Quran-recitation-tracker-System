@@ -488,7 +488,7 @@ function handleSequenceError(data) {
 |-----------|-----------|---------|
 | **Frontend** | HTML5, CSS3, Vanilla JS | User interface, audio capture, real-time display |
 | **Audio Processing** | MediaRecorder API, FFmpeg | WebM encoding, WAV conversion (16kHz mono) |
-| **ASR** | Groq Whisper-large-v3-turbo OR NVIDIA NeMo CTC | Arabic speech-to-text (cloud or local) |
+| **ASR** | Whisper (Groq api) OR NVIDIA NeMo CTC | Arabic speech-to-text (cloud or local) |
 | **Alignment Engine** | Python, Levenshtein | Fuzzy segment matching, word alignment |
 | **Session Management** | Flask-SocketIO | WebSocket communication, state persistence |
 | **Data** | JSON (hafs_smart_v8) | Quranic text with metadata (sura, aya, juz) |
