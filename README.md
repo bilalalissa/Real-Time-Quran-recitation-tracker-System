@@ -684,7 +684,7 @@ MAX_LOW_CONFIDENCE_CHUNKS = 3       # Consecutive low chunks before search mode
 ## 📁 Project Structure
 
 ```
-quraan_ai/
+Real-Time-Quran-recitation-tracker-System/
 ├── backend/                    # Backend server
 │   ├── app.py                  # Flask application + Socket.IO handlers
 │   ├── asr_backend.py          # ASR abstraction layer (Whisper/NeMo)
