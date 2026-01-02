@@ -539,6 +539,7 @@ function handleSequenceError(data) {
 - **NVIDIA GPU with CUDA** (highly recommended for real-time performance)
 - **NeMo Model File**: `arabic-asr/conformer_ctc_small_60e_adamw_30wtr_32wv_40wte.nemo`
 - **PyTorch with CUDA support** (install from [pytorch.org](https://pytorch.org/))
+> **Note**: If you don't have a GPU and don't want to use cloud APIs, the app can still run locally with NeMo on CPU, but transcription will be much slower and may not be real-time.
 
 ### Direct Execution
 
