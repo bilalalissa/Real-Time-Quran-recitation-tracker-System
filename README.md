@@ -83,7 +83,7 @@ Tarteel's approach **avoids complex acoustic alignment methods** like Dynamic Ti
 - **Simplicity**: Easier to debug and tune for word-level feedback
 
 This project implements this philosophy using:
-- **Groq Whisper API** for Arabic speech-to-text transcription
+- **Cloud Whisper API (Groq/OpenAI)** for Arabic speech-to-text transcription
 - **Levenshtein distance** for fuzzy word matching
 - **Custom segment search** for context-aware alignment
 
@@ -91,7 +91,7 @@ This project implements this philosophy using:
 
 For real-time Quranic recitation tracking, the choice of Automatic Speech Recognition (ASR) backend is critical, balancing **latency**, **accuracy**, and **computational cost**.
 
-1. **OpenAI Whisper**: While a robust general-purpose model trained on 100+ languages, Whisper often prioritizes broad multilingual support over the specific nuances of Quranic recitation. It can also introduce higher latency or require significant cloud resources (e.g., Groq API) for real-time performance.
+1. **OpenAI Whisper**: While a robust general-purpose model trained on 100+ languages, Whisper often prioritizes broad multilingual support over the specific nuances of Quranic recitation. It can also introduce higher latency or require paid cloud resources for real-time performance.
 
 2. **NVIDIA NeMo**: An open-source, high-performance ASR framework optimized for speed. However, standard pre-trained NeMo models are typically English-centric or lack specific tuning for Arabic dialects.
 
@@ -317,7 +317,7 @@ Overall:           O(S × L + T × Q)        # where L = avg character length
 │  │  2. Convert WebM → WAV (ffmpeg) ────────────────┤      │    │
 │  │                                                 │      │    │
 │  │  3. Transcribe Audio (ASR Backend) ─────────────┤      │    │
-│  │     ├─ Groq Whisper API (Cloud)                 │      │    │
+│  │     ├─ Whisper API (Cloud: Groq/OpenAI)         │      │    │
 │  │     └─ NVIDIA NeMo (Local GPU)                  │      │    │
 │  │                                                 │      │    │
 │  │  4. Normalize & Tokenize Text ──────────────────┤      │    │
@@ -515,7 +515,7 @@ function handleSequenceError(data) {
 |-----------|-----------|---------|
 | **Frontend** | HTML5, CSS3, Vanilla JS | User interface, audio capture, real-time display |
 | **Audio Processing** | MediaRecorder API, FFmpeg | WebM encoding, WAV conversion (16kHz mono) |
-| **ASR** | Whisper (Groq api) OR NVIDIA NeMo CTC | Arabic speech-to-text (cloud or local) |
+| **ASR** | Whisper (Groq/OpenAI API) OR NVIDIA NeMo CTC | Arabic speech-to-text (cloud or local) |
 | **Alignment Engine** | Python, Levenshtein | Fuzzy segment matching, word alignment |
 | **Session Management** | Flask-SocketIO | WebSocket communication, state persistence |
 | **Data** | JSON (hafs_smart_v8) | Quranic text with metadata (sura, aya, juz) |
@@ -531,8 +531,9 @@ function handleSequenceError(data) {
 - **Python 3.8+**
 - **FFmpeg** (for audio conversion)
 
-**For Groq Whisper Backend (Cloud API - Default):**
-- **Groq API Key** ([Get one here](https://console.groq.com/))
+**For Cloud Whisper Backend (Default):**
+- **Groq API Key** ([Get one here](https://console.groq.com/)) or
+- **OpenAI API Key** ([Get one here](https://platform.openai.com/))
 
 **For NVIDIA NeMo Backend (Local Processing):**
 - **NVIDIA GPU with CUDA** (highly recommended for real-time performance)
@@ -563,6 +564,9 @@ venv\Scripts\activate
 # Install base dependencies
 pip install -r requirements.txt
 
+# For OpenAI cloud provider (optional)
+pip install openai
+
 # For NeMo backend: Install PyTorch with CUDA
 # Visit https://pytorch.org/ and install the appropriate version for your system
 # Example for CUDA 11.8:
@@ -571,16 +575,19 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 
 #### Step 3: Configure ASR Backend
 
-**Option A: Using Groq Whisper (Default - Cloud API)**
+**Option A: Using Cloud Whisper (Groq or OpenAI)**
 
 Create `.env` file:
 ```.env
 GROQ_API_KEY=your_groq_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
+Set only the key for the provider you plan to use.
 
 In `backend/config.py`, ensure:
 ```python
 ASR_BACKEND = "whisper"  # Default
+ASR_CLOUD_PROVIDER = "groq"  # Or "openai"
 ```
 
 **Option B: Using NVIDIA NeMo (Local Processing)**
@@ -626,7 +633,8 @@ All tunable parameters are located in `backend/config.py`:
 ### ASR Backend Selection
 
 ```python
-ASR_BACKEND = "whisper"  # Options: "whisper" (Groq cloud) or "nemo" (local)
+ASR_BACKEND = "whisper"  # Options: "whisper" (cloud) or "nemo" (local)
+ASR_CLOUD_PROVIDER = "groq"  # Options: "groq" or "openai"
 NEMO_MODEL_PATH = "arabic-asr/conformer_ctc_small_60e_adamw_30wtr_32wv_40wte.nemo"
 AUDIO_BUFFER_MAX_DURATION = 8.0  # Cumulative audio buffer (seconds) for better context
 ```
@@ -701,7 +709,7 @@ MAX_LOW_CONFIDENCE_CHUNKS = 3       # Consecutive low chunks before search mode
    - Decrease `MIN_AUDIO_ENERGY` to 0.005
 
 6. **Want to switch ASR backend**:
-   - For cloud processing: Set `ASR_BACKEND = "whisper"` and ensure `GROQ_API_KEY` is set
+   - For cloud processing: Set `ASR_BACKEND = "whisper"` and set `ASR_CLOUD_PROVIDER` + matching API key
    - For local processing: Set `ASR_BACKEND = "nemo"` and ensure GPU/CUDA is available
    - Check logs on startup to confirm which backend is active
 
@@ -741,7 +749,7 @@ Real-Time-Quran-recitation-tracker-System/
 │   ├── hafs_smart_v8.json      # Quranic text data (Hafs)
 │   └── HafsSmart_08.ttf        # Quranic Arabic font
 │
-├── .env                        # Environment variables (GROQ_API_KEY, if used groq backend only) 
+├── .env                        # Environment variables (GROQ_API_KEY/OPENAI_API_KEY as needed)
 ├── run.py                      # Application entry point (Eventlet WSGI server)
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # This file
@@ -790,6 +798,7 @@ This project is built upon the following research and technical documentation:
 
 - **[Tarteel AI Team](https://tarteel.ai/blog/)**: For their groundbreaking research in Quranic AI applications
 - **[Groq](https://www.groq.com/)**: For providing fast, accurate Whisper API access
+- **[OpenAI](https://platform.openai.com/)**: For offering Whisper API access as an alternative cloud provider
 - **[NVIDIA](https://developer.nvidia.com/nvidia-nemo)**: For the NeMo toolkit and Arabic ASR models enabling local processing
 - **[Mostafa Ahmed Mostafa](https://github.com/MostafaAhmed98)**: For training and open-sourcing the specialized Arabic ASR model used and recommended in this project
 
