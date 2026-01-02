@@ -8,6 +8,22 @@ An open-source, AI-powered system for real-time assessment and word-by-word trac
 
 ---
 
+## Index
+
+| Topic | Link |
+| --- | --- |
+| Overview | [Overview](#overview) |
+| Background | [Background](#background) |
+| Algorithmic Foundation | [Algorithmic Foundation](#algorithmic-foundation) |
+| System Architecture | [System Architecture](#system-architecture) |
+| Implementation | [Implementation](#implementation) |
+| Installation & Usage | [Installation & Usage](#installation--usage) |
+| Configuration | [Configuration](#configuration) |
+| Project Structure | [Project Structure](#project-structure) |
+| Research References | [Research References](#research-references) |
+| Acknowledgments | [Acknowledgments](#acknowledgments) |
+| Contact | [Contact](#contact) |
+
 ##  Overview
 
 This project is an web-based application designed to assist Muslims worldwide in memorizing and perfecting their recitation of the Holy Quran. The system provides:
@@ -29,6 +45,8 @@ The system now includes an advanced **sequence monitoring** capability that:
 - Provides real-time feedback without interrupting the recitation flow
 
 See [SEQUENCE_DETECTION.md](SEQUENCE_DETECTION.md) for detailed documentation.
+
+[Back to top](#real-time-quran-recitation-tracker-system)
 
 ---
 <div align="center">
@@ -103,6 +121,8 @@ audio_file = "path/to/arabic_audio.wav"
 transcription = asr_model.transcribe([audio_file])
 print(transcription[0])
 ```
+
+[Back to top](#real-time-quran-recitation-tracker-system)
 
 ---
 
@@ -261,6 +281,8 @@ Overall:           O(S × L + T × Q)        # where L = avg character length
 1. Early stopping: Discard segments with score < threshold
 2. Segment caching: Precompute segment texts during initialization
 3. Tracking mode: Reduce S by limiting search window
+
+[Back to top](#real-time-quran-recitation-tracker-system)
 
 ---
 
@@ -498,6 +520,8 @@ function handleSequenceError(data) {
 | **Session Management** | Flask-SocketIO | WebSocket communication, state persistence |
 | **Data** | JSON (hafs_smart_v8) | Quranic text with metadata (sura, aya, juz) |
 
+[Back to top](#real-time-quran-recitation-tracker-system)
+
 ---
 
 ##  Installation & Usage
@@ -590,6 +614,8 @@ INFO: ASR Backend: whisper (cloud)
 INFO: ASR Backend: nemo (local)
 INFO: NeMo model loaded on CUDA (GPU)
 ```
+
+[Back to top](#real-time-quran-recitation-tracker-system)
 
 ---
 
@@ -684,8 +710,11 @@ MAX_LOW_CONFIDENCE_CHUNKS = 3       # Consecutive low chunks before search mode
    - If on CPU, consider switching to `ASR_BACKEND = "whisper"` for better latency
    - Ensure PyTorch CUDA version matches your GPU drivers
 
+[Back to top](#real-time-quran-recitation-tracker-system)
+
 ---
 
+<a id="project-structure"></a>
 ## 📁 Project Structure
 
 ```
@@ -717,6 +746,8 @@ Real-Time-Quran-recitation-tracker-System/
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # This file
 ```
+
+[Back to top](#real-time-quran-recitation-tracker-system)
 
 ---
 
@@ -753,14 +784,19 @@ This project is built upon the following research and technical documentation:
 - **Multilingual Support**: Add translations for interface text
 - **Testing**: Unit tests, integration tests, benchmarking
 
+[Back to top](#real-time-quran-recitation-tracker-system)
+
 ##  Acknowledgments
 
 - **[Tarteel AI Team](https://tarteel.ai/blog/)**: For their groundbreaking research in Quranic AI applications
 - **[Groq](https://www.groq.com/)**: For providing fast, accurate Whisper API access
 - **[NVIDIA](https://developer.nvidia.com/nvidia-nemo)**: For the NeMo toolkit and Arabic ASR models enabling local processing
 - **[Mostafa Ahmed Mostafa](https://github.com/MostafaAhmed98)**: For training and open-sourcing the specialized Arabic ASR model used and recommended in this project
+
+[Back to top](#real-time-quran-recitation-tracker-system)
 ---
 
+<a id="contact"></a>
 ## 📧 Contact
 
 For questions, bug reports, or feature requests, please open an issue on GitHub
@@ -771,4 +807,4 @@ For questions, bug reports, or feature requests, please open an issue on GitHub
 
 ***whatsapp***: http://wa.me/201001866276
 
-
+[Back to top](#real-time-quran-recitation-tracker-system)
